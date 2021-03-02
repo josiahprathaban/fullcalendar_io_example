@@ -1,0 +1,75 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="index.css">
+
+    <link href='lib/fullcalendar-5.51/main.css' rel='stylesheet' />
+    <script src='lib/fullcalendar-5.51/main.js'></script>
+    <script src="lib/jquery-3.5.1/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <select name="person" onchange="showCalender(this.value)">
+        <option value="">-select a person-</option>
+        <option value="_001">Kumar</option>
+        <option value="_002">Amal</option>
+        <option value="_003">Ramana</option>
+        <option value="_004">Roma</option>
+    </select>
+    <div class='calendar' id='calendar'></div>
+
+
+
+    <script>
+        function showCalender(person){
+            if (person.length != 0) {
+
+                httpRequest(person);
+
+                $("#calendar").show();
+            }else{
+                $("#calendar").hide();
+            }
+        }
+
+        function httpRequest(person){
+            let xmlhttp = new XMLHttpRequest();
+            xmlhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res = JSON.parse(this.response);
+                    calendar(res);
+                }
+            };
+            xmlhttp.open("GET", "db.php?person=" + person, true);
+            xmlhttp.send();
+        }
+
+        function calendar(res) {
+            let events = [];
+            for(let i=0; i<res.length; i++){
+                if(res[i]['Attendance'] === "1"){
+                    events.push({
+                        start: res[i]['Date'],
+                        display: 'background',
+                        color: '#00FF00'
+                    })
+                }
+                else {
+                    events.push({
+                        start: res[i]['Date'],
+                        display: 'background',
+                        color: '#FF0000'
+                    })
+                }
+            }
+          let calendarEl = document.getElementById('calendar');
+          let calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            events: events,
+          });
+          calendar.render();
+        }
+      </script>
+</body>
+</html>
